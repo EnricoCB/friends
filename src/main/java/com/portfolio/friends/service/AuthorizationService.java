@@ -1,6 +1,6 @@
 package com.portfolio.friends.service;
 
-import com.portfolio.friends.repository.UserRepository;
+import com.portfolio.friends.repository.AuthenticationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class AuthorizationService implements UserDetailsService {
 
-    UserRepository repository;
+    AuthenticationRepository repository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

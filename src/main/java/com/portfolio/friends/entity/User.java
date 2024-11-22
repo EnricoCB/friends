@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -32,7 +33,13 @@ public class User implements UserDetails {
     private LocalDate signupDate = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
-    private ProfileVisibility visibility;
+    private ProfileVisibility visibility = ProfileVisibility.PUBLIC;
+
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friendship> sentRequests;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friendship> receivedRequests;
 
     public User(String username, String password) {
         this.username = username;
