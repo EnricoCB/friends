@@ -34,6 +34,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private ProfileVisibility visibility;
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
