@@ -1,4 +1,4 @@
 package com.portfolio.friends.dto;
 
-public record UserDTO() {
+public record UserDTO(String username) {
 }

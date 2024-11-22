@@ -1,6 +1,6 @@
 package com.portfolio.friends.infra.security;
 
-import com.portfolio.friends.repository.UserRepository;
+import com.portfolio.friends.repository.AuthenticationRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private final TokenService tokenService;
     @Autowired
-    private UserRepository userRepository;
+    private AuthenticationRepository authenticationRepository;
 
     public SecurityFilter(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -31,9 +31,10 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if (token != null) {
             var login = tokenService.validateToken(token);
-            UserDetails user = userRepository.findByUsername(login);
+            UserDetails user = authenticationRepository.findByUsername(login);
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
