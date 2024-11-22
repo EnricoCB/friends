@@ -1,5 +1,6 @@
 package com.portfolio.friends.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,10 +36,12 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private ProfileVisibility visibility = ProfileVisibility.PUBLIC;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Friendship> sentRequests;
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Friendship> receivedRequests;
 
     public User(String username, String password) {

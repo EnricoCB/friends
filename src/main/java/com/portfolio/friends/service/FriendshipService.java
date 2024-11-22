@@ -15,4 +15,8 @@ public class FriendshipService {
     public Friendship friendshipRequest(User request, User reciever){
         return friendshipRepository.save(new Friendship(request, reciever));
     }
+
+    public void friendshipAccept(User request, User reciever) {
+
+    }
 }

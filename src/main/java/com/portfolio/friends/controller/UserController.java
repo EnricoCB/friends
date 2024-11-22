@@ -48,12 +48,5 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/request")
-    public ResponseEntity request(@RequestBody UserDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User reciever = userService.findByUsername(dto.username());
-        User request = userService.findByUsername(authentication.getName());
-        friendshipService.friendshipRequest(request, reciever);
-        return ResponseEntity.ok().build();
-    }
+
 }
