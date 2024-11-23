@@ -2,7 +2,6 @@ package com.portfolio.friends.controller;
 
 import com.portfolio.friends.dto.ListUserDTO;
 import com.portfolio.friends.dto.UserDTO;
-import com.portfolio.friends.entity.Friendship;
 import com.portfolio.friends.entity.User;
 import com.portfolio.friends.service.FriendshipService;
 import com.portfolio.friends.service.UserService;
@@ -51,5 +50,17 @@ public class FriendshipController {
 
         return new ListUserDTO(userDTOs);
     }
-    
+
+    @GetMapping("/requester")
+    public ListUserDTO requester() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findByUsername(authentication.getName());
+
+        List<UserDTO> userDTOs = user.getSentRequests().stream()
+                .map(friendship -> new UserDTO(friendship.getReceiver().getUsername()))
+                .toList();
+
+        return new ListUserDTO(userDTOs);
+    }
+
 }
