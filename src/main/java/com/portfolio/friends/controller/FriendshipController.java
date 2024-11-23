@@ -2,10 +2,14 @@ package com.portfolio.friends.controller;
 
 import com.portfolio.friends.dto.ListUserDTO;
 import com.portfolio.friends.dto.UserDTO;
+import com.portfolio.friends.entity.Friendship;
 import com.portfolio.friends.entity.User;
 import com.portfolio.friends.service.FriendshipService;
 import com.portfolio.friends.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,27 +44,21 @@ public class FriendshipController {
     }
 
     @GetMapping("/receiver")
-    public ListUserDTO receiver() {
+    public Page<UserDTO> getReceivedRequests(@PageableDefault(size = 5) Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User receiver = userService.findByUsername(authentication.getName());
-
-        List<UserDTO> userDTOs = receiver.getReceivedRequests().stream()
-                .map(friendship -> new UserDTO(friendship.getRequester().getUsername()))
-                .toList();
-
-        return new ListUserDTO(userDTOs);
+        Page<Friendship> friendships = friendshipService.getReceivedRequests(receiver, pageable);
+        return friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
     }
 
     @GetMapping("/requester")
-    public ListUserDTO requester() {
+    public Page<UserDTO> requester(@PageableDefault(size = 5) Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(authentication.getName());
 
-        List<UserDTO> userDTOs = user.getSentRequests().stream()
-                .map(friendship -> new UserDTO(friendship.getReceiver().getUsername()))
-                .toList();
+       Page<Friendship> friendships = friendshipService.getSentRequests(user, pageable);
 
-        return new ListUserDTO(userDTOs);
+        return friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
     }
 
 }
