@@ -1,6 +1,4 @@
 package com.portfolio.friends.controller;
-
-import com.portfolio.friends.dto.ListUserDTO;
 import com.portfolio.friends.dto.UserDTO;
 import com.portfolio.friends.entity.Friendship;
 import com.portfolio.friends.entity.User;
@@ -14,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -56,11 +52,23 @@ public class FriendshipController {
     public ResponseEntity<Page<UserDTO>> requester(@PageableDefault(size = 5) Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(authentication.getName());
-
-       Page<Friendship> friendships = friendshipService.getSentRequests(user, pageable);
-
+        Page<Friendship> friendships = friendshipService.getSentRequests(user, pageable);
         Page<UserDTO> userDTOPage = friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
         return ResponseEntity.ok(userDTOPage);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<UserDTO>> list(@PageableDefault(size = 5) Pageable pageable) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User receiver = userService.findByUsername(authentication.getName());
+        Page<Friendship> friendships = friendshipService.getAcceptedFriendships(receiver, pageable);
+        Page<UserDTO> friendDTOPage = friendships.map(friendship -> {
+            User friend = friendship.getRequester().equals(receiver)
+                    ? friendship.getReceiver()
+                    : friendship.getRequester();
+            return new UserDTO(friend.getUsername());
+        });
+        return ResponseEntity.ok(friendDTOPage);
     }
 
 }

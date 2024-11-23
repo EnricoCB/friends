@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,5 +36,9 @@ public class FriendshipService {
 
     public Page<Friendship> getSentRequests(User requester, Pageable pageable) {
         return friendshipRepository.findByRequester(requester, pageable);
+    }
+
+    public Page<Friendship> getAcceptedFriendships(User receiver, Pageable pageable) {
+        return friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(receiver, receiver, pageable);
     }
 }
