@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,9 +16,24 @@ public class FriendshipService {
 
     FriendshipRepository friendshipRepository;
 
-    public Friendship friendshipRequest(User request, User reciever){
-        return friendshipRepository.save(new Friendship(request, reciever));
+    public void friendshipRequest(User request, User receiver) {
+        if (friendshipRepository.findByRequesterAndReceiver(request, receiver).isPresent()) {
+            throw new RuntimeException("Solicitação já existe");
+        }
+        if (friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(receiver, request).isPresent() ||
+                friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(request, receiver).isPresent()) {
+            throw new RuntimeException("Amizade já existe");
+        }
+
+        friendshipRepository.findByRequesterAndReceiver(receiver, request).ifPresentOrElse(
+                friendship -> {
+                    friendship.setAccepted(true);
+                    friendshipRepository.save(friendship);
+                },
+                () -> friendshipRepository.save(new Friendship(request, receiver))
+        );
     }
+
 
     public void friendshipAccept(User requester, User receiver) {
         Friendship friendship = friendshipRepository.findByReceiver(receiver)
@@ -30,6 +44,7 @@ public class FriendshipService {
         friendship.setAccepted(true);
         friendshipRepository.save(friendship);
     }
+
     public Page<Friendship> getReceivedRequests(User receiver, Pageable pageable) {
         return friendshipRepository.findByReceiver(receiver, pageable);
     }
@@ -41,4 +56,6 @@ public class FriendshipService {
     public Page<Friendship> getAcceptedFriendships(User receiver, Pageable pageable) {
         return friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(receiver, receiver, pageable);
     }
+
+    
 }
