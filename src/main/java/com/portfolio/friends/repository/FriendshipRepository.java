@@ -8,8 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
+    List<Friendship> findByReceiver(User receiver);
     Page<Friendship> findByReceiver(User receiver, Pageable pageable);
     Page<Friendship> findByRequester(User requester, Pageable pageable);
 

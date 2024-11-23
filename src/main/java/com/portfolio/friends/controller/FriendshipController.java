@@ -44,21 +44,23 @@ public class FriendshipController {
     }
 
     @GetMapping("/receiver")
-    public Page<UserDTO> getReceivedRequests(@PageableDefault(size = 5) Pageable pageable) {
+    public ResponseEntity<Page<UserDTO>> getReceivedRequests(@PageableDefault(size = 5) Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User receiver = userService.findByUsername(authentication.getName());
         Page<Friendship> friendships = friendshipService.getReceivedRequests(receiver, pageable);
-        return friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
+        Page<UserDTO> userDTOPage = friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
+        return ResponseEntity.ok(userDTOPage);
     }
 
     @GetMapping("/requester")
-    public Page<UserDTO> requester(@PageableDefault(size = 5) Pageable pageable) {
+    public ResponseEntity<Page<UserDTO>> requester(@PageableDefault(size = 5) Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(authentication.getName());
 
        Page<Friendship> friendships = friendshipService.getSentRequests(user, pageable);
 
-        return friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
+        Page<UserDTO> userDTOPage = friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
+        return ResponseEntity.ok(userDTOPage);
     }
 
 }
