@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
     private final TokenService tokenService;
     private final UserService userService;
     private final FriendshipService friendshipService;
@@ -41,11 +40,11 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody AuthenticationDTO dto) {
-        if(this.userRepository.findByUsername(dto.username()) != null) return ResponseEntity.badRequest().build();
+        if(this.userService.findByUsername(dto.username()) != null) return ResponseEntity.badRequest().build();
         String encryptPassword = new BCryptPasswordEncoder().encode(dto.password());
         User user = new User(dto.username(), encryptPassword);
 
-        this.userRepository.save(user);
+        this.userService.saveUser(user);
         return ResponseEntity.ok().build();
     }
 
