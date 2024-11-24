@@ -17,9 +17,15 @@ public class FriendshipService {
     FriendshipRepository friendshipRepository;
 
     public void friendshipRequest(User request, User receiver) {
+
+        if(receiver.getVisibility() == User.ProfileVisibility.HIDDEN){
+            throw new RuntimeException("Perfil Privado");
+        }
+
         if (friendshipRepository.findByRequesterAndReceiver(request, receiver).isPresent()) {
             throw new RuntimeException("Solicitação já existe");
         }
+
         if (friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(receiver, request).isPresent() ||
                 friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(request, receiver).isPresent()) {
             throw new RuntimeException("Amizade já existe");
