@@ -4,7 +4,6 @@ import com.portfolio.friends.dto.*;
 import com.portfolio.friends.entity.Friendship;
 import com.portfolio.friends.entity.User;
 import com.portfolio.friends.infra.security.TokenService;
-import com.portfolio.friends.repository.UserRepository;
 import com.portfolio.friends.service.FriendshipService;
 import com.portfolio.friends.service.UserService;
 import lombok.AllArgsConstructor;
@@ -51,6 +50,9 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> profile(@RequestBody UserDTO dto, @PageableDefault(size = 5) Pageable pageable) {
         User user = userService.findByUsername(dto.username());
+        if(user.getVisibility() == User.ProfileVisibility.HIDDEN){
+            throw new RuntimeException("perfil privado");
+        }
         Page<Friendship> friendships = friendshipService.getAcceptedFriendships(user, pageable);
         Page<String> friendUsernames = friendships.map(friendship -> {
             User friend = friendship.getRequester().equals(user)
