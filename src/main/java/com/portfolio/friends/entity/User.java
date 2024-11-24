@@ -33,8 +33,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private LocalDate signupDate = LocalDate.now();
 
+    @Column(name = "users_decline_frienship")
+    private int usersDeclineFriendship;
+
     @Enumerated(EnumType.STRING)
     private ProfileVisibility visibility = ProfileVisibility.PUBLIC;
+
+    @Enumerated(EnumType.STRING)
+    private Badge badge;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,6 +49,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Friendship> receivedRequests;
+
 
     public User(String username, String password) {
         this.username = username;
@@ -76,6 +83,10 @@ public class User implements UserDetails {
 
     public enum ProfileVisibility {
         HIDDEN, PUBLIC
+    }
+
+    public enum Badge {
+        FOREVER_ALONE
     }
 
     @Override

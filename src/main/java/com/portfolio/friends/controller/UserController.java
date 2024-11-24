@@ -39,10 +39,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody AuthenticationDTO dto) {
-        if(this.userService.findByUsername(dto.username()) != null) return ResponseEntity.badRequest().build();
         String encryptPassword = new BCryptPasswordEncoder().encode(dto.password());
         User user = new User(dto.username(), encryptPassword);
-
         this.userService.saveUser(user);
         return ResponseEntity.ok().build();
     }

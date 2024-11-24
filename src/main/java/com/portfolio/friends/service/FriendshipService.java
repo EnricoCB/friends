@@ -15,6 +15,7 @@ import java.util.Optional;
 public class FriendshipService {
 
     FriendshipRepository friendshipRepository;
+    UserService userService;
 
     public void friendshipRequest(User request, User receiver) {
 
@@ -66,6 +67,12 @@ public class FriendshipService {
     public void declineFriendship(User requester, User receiver) {
         friendshipRepository.findByRequesterAndReceiver(requester, receiver).ifPresentOrElse(
                 friendship -> {
+                    requester.setUsersDeclineFriendship(requester.getUsersDeclineFriendship() + 1);
+
+                    if(requester.getUsersDeclineFriendship() == 3){
+                        requester.setBadge(User.Badge.FOREVER_ALONE);
+                    }
+                    userService.saveUser(requester);
                     friendshipRepository.delete(friendship);
                 },
                 () -> {
