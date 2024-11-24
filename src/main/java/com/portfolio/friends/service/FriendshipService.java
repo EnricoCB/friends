@@ -26,8 +26,8 @@ public class FriendshipService {
             throw new RuntimeException("Solicitação já existe");
         }
 
-        if (friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(receiver, request).isPresent() ||
-                friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(request, receiver).isPresent()) {
+        if (friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(receiver, request).isPresent() ||
+                friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(request, receiver).isPresent()) {
             throw new RuntimeException("Amizade já existe");
         }
 
@@ -56,7 +56,7 @@ public class FriendshipService {
     }
 
     public Page<Friendship> getSentRequests(User requester, Pageable pageable) {
-        return friendshipRepository.findByRequester(requester, pageable);
+        return friendshipRepository.findByRequesterAndAcceptedFalse(requester, pageable);
     }
 
     public Page<Friendship> getAcceptedFriendships(User receiver, Pageable pageable) {

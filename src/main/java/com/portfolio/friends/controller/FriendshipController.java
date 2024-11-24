@@ -53,7 +53,7 @@ public class FriendshipController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(authentication.getName());
         Page<Friendship> friendships = friendshipService.getSentRequests(user, pageable);
-        Page<UserDTO> userDTOPage = friendships.map(friendship -> new UserDTO(friendship.getRequester().getUsername()));
+        Page<UserDTO> userDTOPage = friendships.map(friendship -> new UserDTO(friendship.getReceiver().getUsername()));
         return ResponseEntity.ok(userDTOPage);
     }
 

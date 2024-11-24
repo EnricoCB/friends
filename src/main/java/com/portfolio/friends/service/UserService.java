@@ -16,7 +16,9 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new RuntimeException("usuario nao encontrado")
+        );
     }
 
     public void updateVisibility(User user, User.ProfileVisibility newVisibility) {
