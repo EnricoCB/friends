@@ -57,5 +57,40 @@ public class FriendshipService {
         return friendshipRepository.findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(receiver, receiver, pageable);
     }
 
-    
+    public void declineFriendship(User requester, User receiver) {
+        friendshipRepository.findByRequesterAndReceiver(requester, receiver).ifPresentOrElse(
+                friendship -> {
+                    friendshipRepository.delete(friendship);
+                },
+                () -> {
+                    throw new RuntimeException("socilitação inexistente");
+                }
+        );
+
+    }
+
+    public void cancelRequestFriendship(User receiver, User requester) {
+        friendshipRepository.findByRequesterAndReceiver(requester, receiver).ifPresentOrElse(
+                friendship -> {
+                    friendshipRepository.delete(friendship);
+                },
+                () -> {
+                    throw new RuntimeException("socilitação inexistente");
+                }
+        );
+
+    }
+
+    public void undoFriendship(User requester, User receiver) {
+        Optional<Friendship> friendship = friendshipRepository
+                .findByRequesterAndReceiver(requester, receiver)
+                .or(() -> friendshipRepository.findByRequesterAndReceiver(receiver, requester));
+
+        if (friendship.isPresent()) {
+            friendshipRepository.delete(friendship.get());
+        } else {
+            throw new RuntimeException("Amizade inexistente");
+        }
+    }
+
 }

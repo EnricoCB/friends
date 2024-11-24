@@ -22,7 +22,7 @@ public class FriendshipController {
     FriendshipService friendshipService;
 
     @PostMapping("/request")
-    public ResponseEntity request(@RequestBody UserDTO dto) {
+    public ResponseEntity<Void> request(@RequestBody UserDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User reciever = userService.findByUsername(dto.username());
         User request = userService.findByUsername(authentication.getName());
@@ -31,7 +31,7 @@ public class FriendshipController {
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity accept(@RequestBody UserDTO dto) {
+    public ResponseEntity<Void> accept(@RequestBody UserDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User reciever = userService.findByUsername(authentication.getName());
         User request = userService.findByUsername(dto.username());
@@ -69,6 +69,33 @@ public class FriendshipController {
             return new UserDTO(friend.getUsername());
         });
         return ResponseEntity.ok(friendDTOPage);
+    }
+
+    @DeleteMapping("/decline")
+    public ResponseEntity<Void> decline(@RequestBody UserDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User reciever = userService.findByUsername(authentication.getName());
+        User requester = userService.findByUsername(dto.username());
+        friendshipService.declineFriendship(requester, reciever);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/cancel")
+    public ResponseEntity<Void> cancel(@RequestBody UserDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User reciever = userService.findByUsername(authentication.getName());
+        User requester = userService.findByUsername(dto.username());
+        friendshipService.cancelRequestFriendship(reciever, requester);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/undo")
+    public ResponseEntity<Void> undo(@RequestBody UserDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User reciever = userService.findByUsername(authentication.getName());
+        User requester = userService.findByUsername(dto.username());
+        friendshipService.undoFriendship(reciever, requester);
+        return ResponseEntity.noContent().build();
     }
 
 }
