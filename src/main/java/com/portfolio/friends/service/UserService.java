@@ -17,5 +17,9 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public void updateVisibility(User user, User.ProfileVisibility newVisibility) {
+        user.setVisibility(newVisibility);
+        userRepository.save(user);
+    }
 
 }
