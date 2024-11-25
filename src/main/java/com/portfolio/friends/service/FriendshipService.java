@@ -2,6 +2,7 @@ package com.portfolio.friends.service;
 
 import com.portfolio.friends.entity.Friendship;
 import com.portfolio.friends.entity.User;
+import com.portfolio.friends.exception.FriendshipAlreadyExistsException;
 import com.portfolio.friends.repository.FriendshipRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,7 @@ public class FriendshipService {
 
         if (friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(receiver, request).isPresent() ||
                 friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(request, receiver).isPresent()) {
-            throw new RuntimeException("Amizade já existe");
+            throw new FriendshipAlreadyExistsException("Amizade já existente");
         }
 
         friendshipRepository.findByRequesterAndReceiver(receiver, request).ifPresentOrElse(
