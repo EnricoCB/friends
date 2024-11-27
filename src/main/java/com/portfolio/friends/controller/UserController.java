@@ -6,6 +6,7 @@ import com.portfolio.friends.entity.User;
 import com.portfolio.friends.infra.security.TokenService;
 import com.portfolio.friends.service.FriendshipService;
 import com.portfolio.friends.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +31,7 @@ public class UserController {
     private final FriendshipService friendshipService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody AuthenticationDTO dto) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO dto) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         var token = tokenService.generateToken((User) auth.getPrincipal());
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody AuthenticationDTO dto) {
+    public ResponseEntity<Void> register(@RequestBody @Valid AuthenticationDTO dto) {
         String encryptPassword = new BCryptPasswordEncoder().encode(dto.password());
         User user = new User(dto.username(), encryptPassword);
         this.userService.saveUser(user);

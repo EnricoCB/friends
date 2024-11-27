@@ -44,7 +44,7 @@ public class FriendshipService {
 
 
     public void friendshipAccept(User requester, User receiver) {
-        Friendship friendship = friendshipRepository.findByReceiver(receiver)
+        Friendship friendship = friendshipRepository.findByReceiverAndAcceptedFalse(receiver)
                 .stream()
                 .filter(f -> f.getRequester().equals(requester))
                 .findFirst()

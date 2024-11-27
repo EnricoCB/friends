@@ -18,5 +18,5 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Page<Friendship> findByReceiver(User receiver, Pageable pageable);
     Page<Friendship> findByRequesterAndAcceptedFalse(User requester, Pageable pageable);
     Optional<Friendship> findByRequesterAndReceiver(User requester, User receiver);
-
+    Optional<Friendship> findByReceiverAndAcceptedFalse(User receiver);
 }

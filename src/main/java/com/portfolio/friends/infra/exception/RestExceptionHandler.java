@@ -4,12 +4,14 @@ import com.portfolio.friends.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestExceptionHandler{
 
     @ExceptionHandler(FriendshipAlreadyExistsException.class)
     private ResponseEntity<RestErrorMessage> friendshipAlreadyExistsException(FriendshipAlreadyExistsException exception, HttpServletRequest request) {
@@ -30,5 +32,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<RestErrorMessage> requestNotFoundException(RuntimeException exception, HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RestErrorMessage(request, HttpStatus.NOT_FOUND, exception.getMessage()));
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    private ResponseEntity<RestErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException exception, HttpServletRequest request, BindingResult result){
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new RestErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "invalid fields", result));
+    }
+
+
 
 }
