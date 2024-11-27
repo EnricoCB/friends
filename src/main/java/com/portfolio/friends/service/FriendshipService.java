@@ -2,7 +2,7 @@ package com.portfolio.friends.service;
 
 import com.portfolio.friends.entity.Friendship;
 import com.portfolio.friends.entity.User;
-import com.portfolio.friends.exception.FriendshipAlreadyExistsException;
+import com.portfolio.friends.exception.*;
 import com.portfolio.friends.repository.FriendshipRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,11 +21,11 @@ public class FriendshipService {
     public void friendshipRequest(User request, User receiver) {
 
         if(receiver.getVisibility() == User.ProfileVisibility.HIDDEN){
-            throw new RuntimeException("Perfil Privado");
+            throw new PrivateProfileException("private profile");
         }
 
         if (friendshipRepository.findByRequesterAndReceiver(request, receiver).isPresent()) {
-            throw new RuntimeException("Solicitação já existe");
+            throw new RequestAlreadyExistsException("Request already exists");
         }
 
         if (friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(receiver, request).isPresent() ||
@@ -48,7 +48,7 @@ public class FriendshipService {
                 .stream()
                 .filter(f -> f.getRequester().equals(requester))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Friendship request not found"));
+                .orElseThrow(() -> new RequestNotFoundException("Request not found"));
         friendship.setAccepted(true);
         friendshipRepository.save(friendship);
     }
@@ -77,7 +77,7 @@ public class FriendshipService {
                     friendshipRepository.delete(friendship);
                 },
                 () -> {
-                    throw new RuntimeException("socilitação inexistente");
+                    throw new RequestNotFoundException("Request not found");
                 }
         );
 
@@ -89,7 +89,7 @@ public class FriendshipService {
                     friendshipRepository.delete(friendship);
                 },
                 () -> {
-                    throw new RuntimeException("socilitação inexistente");
+                    throw new RequestNotFoundException("Request not found");
                 }
         );
 
@@ -103,7 +103,7 @@ public class FriendshipService {
         if (friendship.isPresent()) {
             friendshipRepository.delete(friendship.get());
         } else {
-            throw new RuntimeException("Amizade inexistente");
+            throw new FriendshipNotFoundException("Friendship not found");
         }
     }
 

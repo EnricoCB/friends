@@ -1,6 +1,7 @@
 package com.portfolio.friends.service;
 
 import com.portfolio.friends.entity.User;
+import com.portfolio.friends.exception.UserNotFoundException;
 import com.portfolio.friends.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(
-                () -> new RuntimeException("usuario nao encontrado")
+                () -> new UserNotFoundException("username: " + username + " not found")
         );
     }
 
