@@ -30,7 +30,7 @@ public class FriendshipService {
 
         if (friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(receiver, request).isPresent() ||
                 friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(request, receiver).isPresent()) {
-            throw new FriendshipAlreadyExistsException("Amizade já existente");
+            throw new FriendshipAlreadyExistsException("Friendship already exists");
         }
 
         friendshipRepository.findByRequesterAndReceiver(receiver, request).ifPresentOrElse(
@@ -83,7 +83,7 @@ public class FriendshipService {
 
     }
 
-    public void cancelRequestFriendship(User receiver, User requester) {
+    public void cancelRequestFriendship(User requester, User receiver) {
         friendshipRepository.findByRequesterAndReceiver(requester, receiver).ifPresentOrElse(
                 friendship -> {
                     friendshipRepository.delete(friendship);
@@ -96,9 +96,8 @@ public class FriendshipService {
     }
 
     public void undoFriendship(User requester, User receiver) {
-        Optional<Friendship> friendship = friendshipRepository
-                .findByRequesterAndReceiver(requester, receiver)
-                .or(() -> friendshipRepository.findByRequesterAndReceiver(receiver, requester));
+        Optional<Friendship> friendship = friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(receiver, requester)
+                .or(() -> friendshipRepository.findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(requester, receiver));
 
         if (friendship.isPresent()) {
             friendshipRepository.delete(friendship.get());
