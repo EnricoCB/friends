@@ -12,11 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
-    List<Friendship> findByReceiver(User receiver);
     Optional<Friendship> findByReceiverAndAcceptedTrueAndRequesterAndAcceptedTrue(User user, User user2);
     Page<Friendship> findByReceiverAndAcceptedTrueOrRequesterAndAcceptedTrue(User user, User user2, Pageable pageable);
-    Page<Friendship> findByReceiver(User receiver, Pageable pageable);
     Page<Friendship> findByRequesterAndAcceptedFalse(User requester, Pageable pageable);
     Optional<Friendship> findByRequesterAndReceiver(User requester, User receiver);
     Optional<Friendship> findByReceiverAndAcceptedFalse(User receiver);
+    Page<Friendship> findByReceiverAndAcceptedFalse(User receiver, Pageable pageable);
 }

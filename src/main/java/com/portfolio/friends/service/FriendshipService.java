@@ -54,7 +54,7 @@ public class FriendshipService {
     }
 
     public Page<Friendship> getReceivedRequests(User receiver, Pageable pageable) {
-        return friendshipRepository.findByReceiver(receiver, pageable);
+        return friendshipRepository.findByReceiverAndAcceptedFalse(receiver, pageable);
     }
 
     public Page<Friendship> getSentRequests(User requester, Pageable pageable) {
